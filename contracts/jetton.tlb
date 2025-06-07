@@ -128,22 +128,21 @@ change_admin#6501f354
   new_admin_address:MsgAddress
   = JettonMinterMsg;
 
+drop_admin#7431f221
+  query_id:uint64
+  = DropAdminMsg;
+
 claim_admin#fb88e119
   query_id:uint64
   = JettonMinterMsg;
 
-call_to#235caf52
-  query_id:uint64
-  to_address:MsgAddressInt
-  ton_amount:Coins
-  master_msg:^JettonMsg
-  = JettonMinterMsg;
-
 upgrade#2508d66a
+  query_id:uint64
   new_data:^Cell
   new_code:^Cell
   = JettonMinterMsg;
 
 change_metadata_uri#cb862902
+  query_id:uint64
   metadata:Cell
   = JettonMinterMsg;
