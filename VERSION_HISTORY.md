@@ -6,6 +6,18 @@ Currently, the most widespread jettons on the network are:
 
 - jetton-1.05M - as it is used in minter.ton.org.
 
+# Sources
+
+Jetton 1.2 - https://github.com/ton-blockchain/jetton-contract (this repo)
+
+Stablecoin - https://github.com/ton-blockchain/stablecoin-contract/
+
+Mintless Jetton - https://github.com/ton-blockchain/mintless-jetton-contract
+
+Jetton 1.00-1.07 (Old) - https://github.com/ton-blockchain/token-contract
+
+Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-contract
+
 # History
 
 ## mintless-jetton-1.0 (HMSTR)
