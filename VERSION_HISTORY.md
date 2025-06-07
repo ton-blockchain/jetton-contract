@@ -4,7 +4,7 @@ Currently, the most widespread jettons on the network are:
 
 - jetton-1.2 - NOT and subsequent popular projects.
 
-- jeton-1.05M - as it is used in minter.ton.org.
+- jetton-1.05M - as it is used in minter.ton.org.
 
 # History
 
