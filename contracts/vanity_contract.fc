@@ -1,3 +1,5 @@
+;; This code is used to select a jetton-minter address with the desired ending, for example EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT for Notcoin.
+
 #include "stdlib.fc";
 (int) slice_equal(slice s1, slice s2) asm "SDEQ";
 
