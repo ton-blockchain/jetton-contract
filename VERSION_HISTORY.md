@@ -40,7 +40,7 @@ Previously, it was required to attach **less** TONs than necessary.
 
 https://t.me/toncoin/656
 
-# jetton-1.05M - 24.11.2022
+## jetton-1.05M - 24.11.2022
 
 Version jetton-1.05 used in minter.ton.org by the Orbs team.
 
@@ -58,7 +58,7 @@ Previously, it was required to attach **less** TONs than necessary.
 
 https://t.me/toncoin/651
 
-# jetton-1.04M - 12.10.2022
+## jetton-1.04M - 12.10.2022
 
 Version jetton-1.04 used in minter.ton.org by the Orbs team.
 
@@ -70,7 +70,7 @@ Jetton-minter:
 
 Introduced "Discoverable" jetton-minter.
 
-# jetton-1.03M - 13.07.2022 
+## jetton-1.03M - 13.07.2022 
 
 Version jetton-1.03 used in minter.ton.org by the Orbs team.
 
@@ -84,7 +84,7 @@ Added additional check for transfer message correctness: `throw_unless(708, slic
 
 Previously, it was possible to send a transfer without `either_forward_payload` bit, which formally does not comply with the standard.
 
-# jetton-1.02M - 07.07.2022
+## jetton-1.02M - 07.07.2022
 
 Version jetton-1.02 used in minter.ton.org by the Orbs team.
 
@@ -96,13 +96,13 @@ Jetton-wallet:
 
 `transfer_notification` previously sent in bounceable mode, now sent in non-bounceable mode because the recipient can be noninitialized.
 
-# Jetton deployer launched - 29.06.2022
+## Jetton deployer launched - 29.06.2022
 
 https://t.me/toncoin/473
 
 It was later moved to minter.ton.org.
 
-# jetton-1.01M - 16.06.2022
+## jetton-1.01M - 16.06.2022
 
 Version jetton-1.01 used in minter.ton.org by the Orbs team.
 
