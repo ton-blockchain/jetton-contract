@@ -46,9 +46,9 @@
     balance -= jetton_amount;
     throw_unless(error::balance_error, balance >= 0);
 
-    int shard_pfx = get_address_shard(to_owner_address);
+    int shard_prefix = get_address_shard_prefix(to_owner_address);
     cell state_init = calculate_jetton_wallet_state_init(to_owner_address, jetton_master_address, my_code());
-    slice to_wallet_address = calculate_jetton_wallet_address(shard_pfx, state_init);
+    slice to_wallet_address = calculate_jetton_wallet_address(shard_prefix, state_init);
     slice response_address = in_msg_body~load_msg_addr();
     in_msg_body~skip_maybe_ref(); ;; custom_payload
     int forward_ton_amount = in_msg_body~load_coins();

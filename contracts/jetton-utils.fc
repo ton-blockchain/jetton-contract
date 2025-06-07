@@ -12,8 +12,12 @@ cell pack_jetton_wallet_data(int status, int balance, slice owner_address, slice
     .end_cell();
 }
 
-int get_address_shard(slice address) inline {
-    address~skip_bits(3 + 8);
+int get_address_shard_prefix(slice address) inline {
+    {-
+    https://github.com/ton-blockchain/ton/blob/8a9ff339927b22b72819c5125428b70c406da631/crypto/block/block.tlb#L105
+    addr_std$10 anycast:(Maybe Anycast) workchain_id:int8 address:bits256  = MsgAddressInt;
+    -}
+    address~skip_bits(3 + 8); ;; skip $10 anycast:(Maybe Anycast) workchain_id:int8
     return address.preload_uint(SHARD_DEPTH);
 }
 
@@ -25,9 +29,9 @@ cell calculate_jetton_wallet_state_init(slice owner_address, slice jetton_master
     library:(Maybe ^Cell) = StateInit;
   -}
     return begin_cell()
-    .store_uint(1, 1)
+    .store_uint(1, 1) ;; ;; Use split_depth;
     .store_uint(SHARD_DEPTH, 5)
-    .store_uint(0, 1)
+    .store_uint(0, 1) ;;  No special
     .store_maybe_ref(jetton_wallet_code)
     .store_maybe_ref(
         pack_jetton_wallet_data(
@@ -40,7 +44,7 @@ cell calculate_jetton_wallet_state_init(slice owner_address, slice jetton_master
     .end_cell();
 }
 
-slice calculate_jetton_wallet_address(int shard_idx, cell state_init) inline {
+slice calculate_jetton_wallet_address(int shard_prefix, cell state_init) inline {
     {-
     https://github.com/ton-blockchain/ton/blob/8a9ff339927b22b72819c5125428b70c406da631/crypto/block/block.tlb#L105
     addr_std$10 anycast:(Maybe Anycast) workchain_id:int8 address:bits256  = MsgAddressInt;
@@ -51,16 +55,15 @@ slice calculate_jetton_wallet_address(int shard_idx, cell state_init) inline {
     return begin_cell()
     .store_uint(4, 3) ;; 0b100 = addr_std$10 tag; No anycast
     .store_int(MY_WORKCHAIN, 8)
-    .store_uint(shard_idx, SHARD_DEPTH)
+    .store_uint(shard_prefix, SHARD_DEPTH)
     .store_uint(prefix_less, 256 - SHARD_DEPTH)
-    ;; .store_uint(cell_hash(state_init), 256)
     .end_cell()
     .begin_parse();
 }
 
 slice calculate_user_jetton_wallet_address(slice owner_address, slice jetton_master_address, cell jetton_wallet_code) inline {
-    int shard_pfx = get_address_shard(owner_address);
-    return calculate_jetton_wallet_address(shard_pfx, calculate_jetton_wallet_state_init(owner_address, jetton_master_address, jetton_wallet_code));
+    int shard_prefix = get_address_shard_prefix(owner_address);
+    return calculate_jetton_wallet_address(shard_prefix, calculate_jetton_wallet_state_init(owner_address, jetton_master_address, jetton_wallet_code));
 }
 
 () check_either_forward_payload(slice s) impure inline {

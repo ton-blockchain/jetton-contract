@@ -37,9 +37,9 @@
 () send_to_jetton_wallet(slice to_address, cell jetton_wallet_code, int ton_amount, cell master_msg, int need_state_init) impure inline {
     raw_reserve(ONE_TON / 100, RESERVE_REGULAR); ;; reserve for storage fees
 
-    int shard_pfx = get_address_shard(to_address);
+    int shard_prefix = get_address_shard_prefix(to_address);
     cell state_init = calculate_jetton_wallet_state_init(to_address, my_address(), jetton_wallet_code);
-    slice to_wallet_address = calculate_jetton_wallet_address(shard_pfx, state_init);
+    slice to_wallet_address = calculate_jetton_wallet_address(shard_prefix, state_init);
 
     ;; build MessageRelaxed, see TL-B layout in stdlib.fc#L733
     var msg = begin_cell()
