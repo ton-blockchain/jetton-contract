@@ -1,13 +1,8 @@
-# Notcoin Jetton
+# TON Jetton (Fungible Token)
 
-Jetton forked from https://github.com/ton-blockchain/stablecoin-contract but with removed governance functionality.
-
+Reference implementation of Jetton (fungible token) smart contract for TON.
 
 # Details
-
-
-Notcoin represents a [standard TON jetton smart contracts](https://github.com/ton-blockchain/token-contract/tree/369ae089255edbd807eb499792a0a838c2e1b272/ft) with additional functionality:
-
 
 - Admin of jetton can change jetton-minter code and it's full data.
 
@@ -48,3 +43,6 @@ API_KEY can be obtained on https://toncenter.com or https://testnet.toncenter.co
    Reducing fees in a blockchain configuration does not require additional actions.
    However, increasing fees in a blockchain configuration requires preliminary preparation - e.g. wallets and services must start sending Toncoins for gas in advance based on future parameters.
 
+## Version History
+
+This is a fork of https://github.com/ton-blockchain/stablecoin-contract but with removed governance functionality.
