@@ -6,6 +6,7 @@ import { compile } from '@ton/blueprint';
 import '@ton/test-utils';
 import { collectCellStats } from '../gasUtils';
 import { Op, Errors } from '../wrappers/JettonConstants';
+import { findTransactionRequired } from '@ton/test-utils';
 
 let blockchain: Blockchain;
 let deployer: SandboxContract<TreasuryContract>;
@@ -15,6 +16,8 @@ let wallet_code: Cell;
 let jwallet_code_raw: Cell;
 let jwallet_code: Cell;
 let userWallet: (address: Address) => Promise<SandboxContract<JettonWallet>>;
+
+const storageDuration= 5 * 365 * 24 * 3600;
 
 describe('State init tests', () => {
     beforeAll(async () => {
@@ -70,14 +73,27 @@ describe('State init tests', () => {
     it('should mint max jetton walue', async () => {
         const maxValue = (2n ** 120n) - 1n;
         const deployerWallet = await userWallet(deployer.address);
-        const res = await jettonMinter.sendMint(deployer.getSender(),
+        let res = await jettonMinter.sendMint(deployer.getSender(),
                                                 deployer.address,
                                                 maxValue,
-                                                null, null, null);
-        expect(res.transactions).toHaveTransaction({
+                                                null, deployer.address, null);
+        const transferTx = findTransactionRequired(res.transactions,{
             on: deployerWallet.address,
             op: Op.internal_transfer,
+            initCode: jwallet_code,
             success: true,
+        });
+
+        const inMsg = transferTx.inMessage!;
+
+        if(inMsg.info.type !== 'internal') {
+            throw new Error("No way");
+        }
+
+        expect(res.transactions).toHaveTransaction({
+            on: deployer.address,
+            op: Op.excesses,
+            aborted: false
         });
 
         const curBalance = await deployerWallet.getJettonBalance();
@@ -90,9 +106,19 @@ describe('State init tests', () => {
         if(smc.account.account === undefined || smc.account.account === null)
             throw new Error("Can't access wallet account!");
         console.log("Jetton wallet max storage stats:", smc.account.account.storageStats.used);
-        const state = smc.accountState.state;
+        const state = inMsg.init!;
         const stateCell = beginCell().store(storeStateInit(state)).endCell();
         console.log("State init stats:", collectCellStats(stateCell, []));
+
+        blockchain.now = transferTx.now + storageDuration + 1;
+
+        // Going to fail, but will trigger storage fee
+        res = await deployer.send({
+            to: deployerWallet.address,
+            value: 0n,
+        });
+
+        expect(smc.account.account.storageStats.duePayment).toBeNull();
     });
 });
 
