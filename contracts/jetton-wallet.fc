@@ -18,10 +18,9 @@
             jetton_master_address:MsgAddressInt = Storage;
 -}
 
-(int, int, slice, slice) load_data() inline {
+(int, slice, slice) load_data() inline {
     slice ds = get_data().begin_parse();
     var data = (
-        ds~load_uint(STATUS_SIZE), ;; status
         ds~load_coins(), ;; balance
         ds~load_msg_addr(), ;; owner_address
         ds~load_msg_addr() ;; jetton_master_address
@@ -30,8 +29,8 @@
     return data;
 }
 
-() save_data(int status, int balance, slice owner_address, slice jetton_master_address) impure inline {
-    set_data(pack_jetton_wallet_data(status, balance, owner_address, jetton_master_address));
+() save_data(int balance, slice owner_address, slice jetton_master_address) impure inline {
+    set_data(pack_jetton_wallet_data(balance, owner_address, jetton_master_address));
 }
 
 () send_jettons(slice in_msg_body, slice sender_address, int msg_value, int fwd_fee) impure inline_ref {
@@ -40,7 +39,7 @@
     int jetton_amount = in_msg_body~load_coins();
     slice to_owner_address = in_msg_body~load_msg_addr();
     check_same_workchain(to_owner_address);
-    (int status, int balance, slice owner_address, slice jetton_master_address) = load_data();
+    (int balance, slice owner_address, slice jetton_master_address) = load_data();
     throw_unless(error::not_owner, equal_slices_bits(owner_address, sender_address));
 
     balance -= jetton_amount;
@@ -78,11 +77,11 @@
 
     send_raw_message(msg, SEND_MODE_CARRY_ALL_REMAINING_MESSAGE_VALUE | SEND_MODE_BOUNCE_ON_ACTION_FAIL);
 
-    save_data(status, balance, owner_address, jetton_master_address);
+    save_data(balance, owner_address, jetton_master_address);
 }
 
 () receive_jettons(slice in_msg_body, slice sender_address, int my_ton_balance, int msg_value) impure inline_ref {
-    (int status, int balance, slice owner_address, slice jetton_master_address) = load_data();
+    (int balance, slice owner_address, slice jetton_master_address) = load_data();
     ;; see internal TL-B layout in jetton.tlb
     int query_id = in_msg_body~load_query_id();
     int jetton_amount = in_msg_body~load_coins();
@@ -136,11 +135,11 @@
         send_raw_message(msg, SEND_MODE_CARRY_ALL_BALANCE | SEND_MODE_IGNORE_ERRORS);
     }
 
-    save_data(status, balance, owner_address, jetton_master_address);
+    save_data(balance, owner_address, jetton_master_address);
 }
 
 () burn_jettons(slice in_msg_body, slice sender_address, int msg_value) impure inline_ref {
-    (int status, int balance, slice owner_address, slice jetton_master_address) = load_data();
+    (int balance, slice owner_address, slice jetton_master_address) = load_data();
     int query_id = in_msg_body~load_query_id();
     int jetton_amount = in_msg_body~load_coins();
     slice response_address = in_msg_body~load_msg_addr();
@@ -172,17 +171,17 @@
 
     send_raw_message(msg, SEND_MODE_CARRY_ALL_REMAINING_MESSAGE_VALUE | SEND_MODE_BOUNCE_ON_ACTION_FAIL);
 
-    save_data(status, balance, owner_address, jetton_master_address);
+    save_data(balance, owner_address, jetton_master_address);
 }
 
 () on_bounce(slice in_msg_body) impure inline {
     in_msg_body~skip_bounced_prefix();
-    (int status, int balance, slice owner_address, slice jetton_master_address) = load_data();
+    (int balance, slice owner_address, slice jetton_master_address) = load_data();
     int op = in_msg_body~load_op();
     throw_unless(error::wrong_op, (op == op::internal_transfer) | (op == op::burn_notification));
     in_msg_body~skip_query_id();
     int jetton_amount = in_msg_body~load_coins();
-    save_data(status, balance + jetton_amount, owner_address, jetton_master_address);
+    save_data(balance + jetton_amount, owner_address, jetton_master_address);
 }
 
 () recv_internal(int my_ton_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
@@ -224,11 +223,6 @@
 }
 
 (int, slice, slice, cell) get_wallet_data() method_id {
-    (int status, int balance, slice owner_address, slice jetton_master_address) = load_data();
+    (int balance, slice owner_address, slice jetton_master_address) = load_data();
     return (balance, owner_address, jetton_master_address, my_code());
-}
-
-int get_status() method_id {
-    (int status, _, _, _) = load_data();
-    return status;
 }

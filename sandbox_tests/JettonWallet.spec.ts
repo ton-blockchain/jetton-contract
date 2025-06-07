@@ -76,12 +76,12 @@ describe('JettonWallet', () => {
         blockchain.now = Math.floor(Date.now() / 1000);
         deployer       = await blockchain.treasury('deployer');
         notDeployer    = await blockchain.treasury('notDeployer');
-        walletStats    = new StorageStats(1030, 3);
+        walletStats    = new StorageStats(1026, 3);
         msgPrices      = getMsgPrices(blockchain.config, 0);
         gasPrices      = getGasPrices(blockchain.config, 0);
         storagePrices  = getStoragePrices(blockchain.config);
         storageDuration= 5 * 365 * 24 * 3600;
-        stateInitStats = new StorageStats(816, 3);
+        stateInitStats = new StorageStats(812, 3);
         defaultContent = {
                            uri: 'https://some_stablecoin.org/meta.json'
                        };

@@ -1,11 +1,9 @@
 #include "workchain.fc";
 
-const int STATUS_SIZE = 4;
 const int SHARD_DEPTH = 8;
 
-cell pack_jetton_wallet_data(int status, int balance, slice owner_address, slice jetton_master_address) inline {
+cell pack_jetton_wallet_data(int balance, slice owner_address, slice jetton_master_address) inline {
     return begin_cell()
-    .store_uint(status, STATUS_SIZE)
     .store_coins(balance)
     .store_slice(owner_address)
     .store_slice(jetton_master_address)
@@ -35,7 +33,6 @@ cell calculate_jetton_wallet_state_init(slice owner_address, slice jetton_master
     .store_maybe_ref(jetton_wallet_code)
     .store_maybe_ref(
         pack_jetton_wallet_data(
-            0, ;; status
             0, ;; balance
             owner_address,
             jetton_master_address)
