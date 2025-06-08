@@ -8,15 +8,17 @@ Currently, the most widespread jettons on the network are:
 
 # Sources
 
-Jetton 1.2 - https://github.com/ton-blockchain/jetton-contract (this repo)
+Jetton 1.2 - https://github.com/ton-blockchain/jetton-contract (this repo).
 
-Stablecoin - https://github.com/ton-blockchain/stablecoin-contract/
+Development history of Jetton 1.2 - https://github.com/EmelyanenkoK/basecoin.
 
-Mintless Jetton - https://github.com/ton-blockchain/mintless-jetton-contract
+Stablecoin - https://github.com/ton-blockchain/stablecoin-contract/ (with development history).
 
-Jetton 1.00-1.07 (Old) - https://github.com/ton-blockchain/token-contract
+Mintless Jetton - https://github.com/ton-blockchain/mintless-jetton-contract (with development history).
 
-Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-contract
+Jetton 1.00-1.07 (Old) - https://github.com/ton-blockchain/token-contract (with development history).
+
+Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-contract (with development history).
 
 # History
 
@@ -30,7 +32,55 @@ Stablecoin code but with removed governance functionality.
 
 ## stablecoin (USDT)
 
-Significantly revised jetton-1.07 https://github.com/ton-blockchain/token-contract with governance functionality.
+Significantly revised jetton-1.07 https://github.com/ton-blockchain/token-contract with governance functionality added.
+
+Jetton-minter interface changes:
+
+- Admin `call_to` action added which can be used to send `transfer`, `burn`, `set_status` to jetton-wallet from jetton-minter, and jetton-wallet will execute this operation.
+
+- `upgrade` message added - upgrade jetton-minter data and code by admin.
+
+- Changing the admin now takes two steps: `change_admin` and `claim_admin`. Previously, it was one step action.
+
+- `top_up` message added - just replenish TON balance by anyone.
+
+- `provide_wallet_address` response is sent in non-bounceable mode.
+
+- Decimals metadata is stored onchain in jetton-minter.
+
+- `change_metadata_uri` message added.
+
+- Processing of bounced mints.
+
+Jetton-wallet interface changes:
+
+- A `status` data field and `get_status` method have been added.
+
+- Depending on the status value outgoing, incoming transfers, or both may be blocked in your wallet.
+
+- Jetton-minter can change the jetton-wallet status with the message `set_status`.
+
+- Only jetton admin can burn jettons, not user.
+
+- `top_up` message - just replenish TON balance by anyone.
+
+Main changes in the code:
+
+- Dynamic gas calculation for calculating the balance on storage fees and for calculating the minimum TON amounts required to be attached to messages.
+
+- Verification of data and messages integrity by `end_parse`. In particular, updated verification of either forward payload and verification of the mint message (message body, TON amount for gas, workchain). 
+
+- Use of `my_code()` (refusal to store token code separately in the jetton-wallet).
+
+- Use of new `BOUNCE_ON_ACTION_FAIL` send mode.
+
+- Use of smart contract libraries for storing and transferring jetton-wallet code.
+
+- new FunC syntax is used: const, pragma, include.
+
+- New stdlib used.
+
+- New code writing guidelines: avoid shortening names, use comments, use constants instead of magic numbers (e.g., for send_mode or bounce mode).
 
 ## jetton-1.07 - 17.01.2023
 
@@ -56,7 +106,7 @@ https://t.me/toncoin/656
 
 Version jetton-1.05 used in minter.ton.org by the Orbs team.
 
-This is discoverable jetton-minter 1.05 and jetton-wallet 1.05 using the FunC 0.2.0 new syntax: imports, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
+This is discoverable jetton-minter 1.05 and jetton-wallet 1.05 using the FunC 0.2.0 new syntax: include, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
 
 ## jetton-1.05 - 23.11.2022
 
@@ -74,7 +124,7 @@ https://t.me/toncoin/651
 
 Version jetton-1.04 used in minter.ton.org by the Orbs team.
 
-This is discoverable jetton-minter 1.04 and jetton-wallet 1.04 using the FunC 0.2.0 new syntax: imports, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
+This is discoverable jetton-minter 1.04 and jetton-wallet 1.04 using the FunC 0.2.0 new syntax: include, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
 
 ## jetton-1.04 - 23.09.2022
 
@@ -86,7 +136,7 @@ Introduced "Discoverable" jetton-minter.
 
 Version jetton-1.03 used in minter.ton.org by the Orbs team.
 
-This is jetton-minter 1.03 and jetton-wallet 1.03 using the FunC 0.2.0 new syntax: imports, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
+This is jetton-minter 1.03 and jetton-wallet 1.03 using the FunC 0.2.0 new syntax: include, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
 
 ## jetton-1.03 - 12.07.2022
 
@@ -100,7 +150,7 @@ Previously, it was possible to send a transfer without `either_forward_payload` 
 
 Version jetton-1.02 used in minter.ton.org by the Orbs team.
 
-This is jetton-minter 1.02 and jetton-wallet 1.02 using the FunC 0.2.0 new syntax: imports, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
+This is jetton-minter 1.02 and jetton-wallet 1.02 using the FunC 0.2.0 new syntax: include, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
 
 ## jetton-1.02 - 04.07.2022
 
@@ -118,7 +168,7 @@ It was later moved to minter.ton.org.
 
 Version jetton-1.01 used in minter.ton.org by the Orbs team.
 
-This is jetton-minter 1.01 and jetton-wallet 1.01 using the FunC 0.2.0 new syntax: imports, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
+This is jetton-minter 1.01 and jetton-wallet 1.01 using the FunC 0.2.0 new syntax: include, pragma version, const. The rest of the files do not use the new syntax. There are no other differences.
 
 ## First ICO on TON - KOTE memecoin 18.04.2022
 
