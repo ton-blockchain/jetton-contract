@@ -32,7 +32,24 @@ Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-
 
 ## mintless-jetton-1.0 (HMSTR) - 28.09.2024
 
-jetton-1.2 with "mintless" functionality.
+jetton-1.2 with added new functionality:
+
+- "mintless" functionality using airdrop merkle-proof.
+
+- The jetton-wallet address is brute-forced in the FunC cycle so that it ends up in the same shard as the owner's wallet. 
+
+Jetton-minter (discoverable) interface changes:
+
+- `get_mintless_airdrop_hashmap_root` and `get_wallet_state_init_and_salt` get-methods added.
+
+- Reserves 1 TON on the jetton-minter balance.
+
+Jetton-wallet interface changes:
+
+- Added functionality to claim airdrop using `transfer.custom_payload`.
+
+- `wallet.is_claimed` get-method added.
+
 
 ## jetton-1.2 (NOT) - 16.05.2024. Also known as basecoin or notcoin-contract
 
