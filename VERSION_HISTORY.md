@@ -89,6 +89,8 @@ Basecoin branch differs from jetton-1.2 in very minor details that have no effec
 
 Significantly revised jetton-1.07 https://github.com/ton-blockchain/token-contract with governance functionality added.
 
+It also incorporates the research-and-development work of the project https://github.com/EmelyanenkoK/modern_jetton.
+
 Jetton-minter (discoverable) interface changes:
 
 - `mint` opcode changed from `21` to `0x642b7d07`.
