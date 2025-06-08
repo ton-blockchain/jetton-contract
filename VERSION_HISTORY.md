@@ -30,6 +30,14 @@ Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-
 
 # History
 
+## jetton-2.0 - In progress
+
+jetton-1.2 with following changes:
+
+- The jetton-wallet is deployed to its owner shard using the `stateInit.split_depth`.
+
+- The `status` field is removed from the jetton-wallet data, as well as the `get_status` get-method.
+
 ## mintless-jetton-1.0 (HMSTR) - 28.09.2024
 
 jetton-1.2 with added new functionality:
