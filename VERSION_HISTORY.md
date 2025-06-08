@@ -26,11 +26,33 @@ Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-
 
 jetton-1.2 with "mintless" functionality.
 
-## jetton-1.2 (NOT) also known as basecoin or notcoin-contract
+## jetton-1.2 (NOT) - 16.05.2024. Also known as basecoin or notcoin-contract
 
-Stablecoin code but with removed governance functionality.
+Stablecoin-1.04 code but with removed governance functionality.
 
-## stablecoin (USDT)
+Jetton-minter (discoverable) interface changes:
+
+- Admin `call_to` message removed.
+
+- `drop_admin` message added.
+
+- Reserves 0.01 TON instead of 1 TON on the jetton-minter balance. 
+
+Jetton-wallet interface changes:
+
+- `set_status` message removed. The `jettonWallet.data.status` field and the `get_status` get-method remain unchanged.
+
+- Outgoing transfer lock functionality and outgoing transfer by jetton-minter functionality removed.
+
+- Incoming transfer lock functionality removed.
+
+- Burn by jetton-minter functionality removed. Burn by user allowed.
+
+notcoin-contract identical to jetton-1.2.
+
+Basecoin branch differs from jetton-1.2 in very minor details that have no effect.
+
+## stablecoin-1.04 (USDT) - 14.04.2024
 
 Significantly revised jetton-1.07 https://github.com/ton-blockchain/token-contract with governance functionality added.
 
