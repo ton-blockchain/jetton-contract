@@ -34,13 +34,15 @@ Stablecoin code but with removed governance functionality.
 
 Significantly revised jetton-1.07 https://github.com/ton-blockchain/token-contract with governance functionality added.
 
-Jetton-minter interface changes:
+Jetton-minter (discoverable) interface changes:
+
+- `mint` opcode changed from `21` to `0x642b7d07`.
 
 - Admin `call_to` action added which can be used to send `transfer`, `burn`, `set_status` to jetton-wallet from jetton-minter, and jetton-wallet will execute this operation.
 
 - `upgrade` message added - upgrade jetton-minter data and code by admin.
 
-- Changing the admin now takes two steps: `change_admin` and `claim_admin`. Previously, it was one step action.
+- Changing the admin now takes two steps: `change_admin` and `claim_admin`. Previously, it was one step action. Opcodes changed. `get_next_admin_address` get-method added.
 
 - `top_up` message added - just replenish TON balance by anyone.
 
@@ -48,7 +50,7 @@ Jetton-minter interface changes:
 
 - Decimals metadata is stored onchain in jetton-minter.
 
-- `change_metadata_uri` message added.
+- `change_content` replaced by `change_metadata_uri` message.
 
 - Processing of bounced mints.
 
