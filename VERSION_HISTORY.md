@@ -1,6 +1,14 @@
 # In short
 
-Currently, the most widespread jettons on the network are:
+There are three different types of jettons:
+
+- Jetton - a regular decentralized token.
+
+- Mintless Jetton - a Jetton, but the initial distribution takes place off-chain. A jetton-wallet is created upon the first action with it.
+
+- Stablecoin - a Jetton, but the admin can block, make transfers, and burns.
+
+Currently, the most widespread regular jettons on the network are:
 
 - jetton-1.2 - NOT and subsequent popular projects.
 
