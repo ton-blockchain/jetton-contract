@@ -22,7 +22,7 @@ Jettons 1.01M-1.05M (minter.ton.org) - https://github.com/ton-blockchain/minter-
 
 # History
 
-## mintless-jetton-1.0 (HMSTR)
+## mintless-jetton-1.0 (HMSTR) - 28.09.2024
 
 jetton-1.2 with "mintless" functionality.
 
@@ -100,7 +100,7 @@ Main changes in the code:
 
 - Use of smart contract libraries for storing and transferring jetton-wallet code.
 
-- new FunC syntax is used: const, pragma, include.
+- New FunC syntax is used: const, pragma, include.
 
 - New stdlib used.
 
