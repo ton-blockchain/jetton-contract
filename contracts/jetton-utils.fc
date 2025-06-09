@@ -21,13 +21,13 @@ int get_address_shard_prefix(slice address) inline {
 
 cell calculate_jetton_wallet_state_init(slice owner_address, slice jetton_master_address, cell jetton_wallet_code) inline {
     {-
-    https://github.com/ton-blockchain/ton/blob/8a9ff339927b22b72819c5125428b70c406da631/crypto/block/block.tlb#L144
-    _ split_depth:(Maybe (## 5)) special:(Maybe TickTock)
+    https://github.com/ton-blockchain/ton/blob/26761a1d139402ef343081810677d2582c3eff51/crypto/block/block.tlb#L144
+    _ fixed_prefix_length:(Maybe (## 5)) special:(Maybe TickTock)
     code:(Maybe ^Cell) data:(Maybe ^Cell)
     library:(Maybe ^Cell) = StateInit;
   -}
     return begin_cell()
-    .store_uint(1, 1) ;; ;; Use split_depth;
+    .store_uint(1, 1) ;; ;; Use fixed_prefix_length;
     .store_uint(SHARD_DEPTH, 5)
     .store_uint(0, 1) ;;  No special
     .store_maybe_ref(jetton_wallet_code)
