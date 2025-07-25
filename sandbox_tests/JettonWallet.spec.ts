@@ -1586,6 +1586,63 @@ describe('JettonWallet', () => {
 
         afterAll(async () => await blockchain.loadFrom(prevState));
 
+        it('jetton wallet code should be updateable with config parameter', async () => {
+            const stateBefore = blockchain.snapshot();
+
+            const governed_code = await compile('JettonGoverned');
+
+            const burnMessage = JettonWallet.burnMessage(1n, null, null);
+
+            const deployerWallet = await userWallet(deployer.address);
+            const balanceBefore  = await deployerWallet.getJettonBalance();
+
+            let res = await blockchain.sendMessage(internal({
+                from: jettonMinter.address,
+                to: deployerWallet.address,
+                value: toNano('1'),
+                body: burnMessage
+            }));
+
+            // Current version is not governed, so burn from minter will fail
+            expect(res.transactions).toHaveTransaction({
+                from: jettonMinter.address,
+                on: deployerWallet.address,
+                op: Op.burn,
+                aborted: true
+            });
+
+            expect(await deployerWallet.getJettonBalance()).toEqual(balanceBefore);
+
+            // Let's say governance library is added
+            const _libs = Dictionary.loadDirect(Dictionary.Keys.BigUint(256), Dictionary.Values.Cell(), blockchain.libs!);
+            _libs.set(BigInt(`0x${governed_code.hash().toString('hex')}`), governed_code);
+            blockchain.libs = beginCell().storeDictDirect(_libs).endCell();
+
+            // Now we switch the code hash in the config parameter
+            const confDict = Dictionary.loadDirect(Dictionary.Keys.Int(32), Dictionary.Values.Cell(), blockchain.config);
+            confDict.set(-1024, beginCell().storeBuffer(governed_code.hash(), 32).endCell());
+
+            blockchain.setConfig(beginCell().storeDictDirect(confDict).endCell());
+
+            res = await blockchain.sendMessage(internal({
+                from: jettonMinter.address,
+                to: deployerWallet.address,
+                value: toNano('1'),
+                body: burnMessage
+            }));
+
+            expect(res.transactions).toHaveTransaction({
+                from: jettonMinter.address,
+                op: Op.burn,
+                aborted: false
+            });
+
+            // Burned successfully
+            expect(await deployerWallet.getJettonBalance()).toEqual(balanceBefore - 1n);
+
+            await blockchain.loadFrom(stateBefore);
+        });
+
 
         it('not admin should not be able to upgrade minter', async () => {
             const codeCell = beginCell().storeUint(getRandomInt(1000, (1 << 32) - 1), 32).endCell();
