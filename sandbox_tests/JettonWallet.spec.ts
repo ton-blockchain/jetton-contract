@@ -92,7 +92,32 @@ describe('JettonWallet', () => {
         const libs = beginCell().storeDictDirect(_libs).endCell();
         blockchain.libs = libs;
         let lib_prep = beginCell().storeUint(2,8).storeBuffer(jwallet_code_raw.hash()).endCell();
-        jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
+
+        const confDict = Dictionary.loadDirect(Dictionary.Keys.Int(32), Dictionary.Values.Cell(), blockchain.config);
+        confDict.set(-1024, beginCell().storeBuffer(jwallet_code_raw.hash(), 32).endCell());
+        blockchain.setConfig(beginCell().storeDictDirect(confDict).endCell());
+        // jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
+
+        /*
+        * Updatable wallet code
+        *<{
+        * 2 PUSHINT
+        * NEWC // constructor of library cell
+        * 8 STU // store 02 as library identifier to library cell constructor
+        * -1024 PUSHINT CONFIGPARAM // X - is special index that is reserved for jetton code
+        * DROP // Drop the status
+        * CTOS // conver param to slice
+        * 256 PUSHINT PLDUX SWAP // load 256 hash of the library
+        * 256 STU // store hash to library cell constructor
+        * 1 PUSHINT ENDXC // finalize library cell
+        * CTOS // open cell (it transparently replaced with actual code loaded via library mechanism)
+        * BLESS // convert slice to continuation (executable code)
+        * EXECUTE // start to execute
+        *}>c
+        */
+
+        jwallet_code = Cell.fromBase64("te6cckEBAQEAHAAANHLIyweB/AD4MjDQgQEA1wMBy/9xzyPQ7R7YMIboiA==");
+        console.log("Code stats:", collectCellStats(jwallet_code, [], false));
 
         console.log('jetton minter code hash = ', minter_code.hash().toString('hex'));
         console.log('jetton wallet code hash = ', jwallet_code.hash().toString('hex'));
@@ -303,6 +328,7 @@ describe('JettonWallet', () => {
         });
 
         printTxGasStats("Mint transaction:", mintTx);
+
 		/*
 		 * No excess in this jetton
         expect(mintResult.transactions).toHaveTransaction({ // excesses
@@ -750,7 +776,7 @@ describe('JettonWallet', () => {
             success: true
         });
         send_gas_fee = printTxGasStats("Jetton transfer", transferTx);
-        let mockGas  = computeGasFee(gasPrices, 10065n);
+        let mockGas  = computeGasFee(gasPrices, 10380n);
         expect(mockGas).toBeGreaterThanOrEqual(send_gas_fee);
         send_gas_fee = mockGas;
 
@@ -761,7 +787,7 @@ describe('JettonWallet', () => {
             success: true
         });
         receive_gas_fee = printTxGasStats("Receive jetton", receiveTx);
-        mockGas   = computeGasFee(gasPrices, 10435n);
+        mockGas   = computeGasFee(gasPrices, 11586n);
         expect(mockGas).toBeGreaterThanOrEqual(receive_gas_fee);
         receive_gas_fee = mockGas;
 
@@ -1034,7 +1060,7 @@ describe('JettonWallet', () => {
 
             const actualSent   = printTxGasStats("Burn transaction", sendResult.transactions[1]);
             const actualRecv   = printTxGasStats("Burn notification transaction", sendResult.transactions[2]);
-            burn_gas_fee = computeGasFee(gasPrices, 5891n);
+            burn_gas_fee = computeGasFee(gasPrices, 7154n);
             burn_notification_fee = computeGasFee(gasPrices, 6757n);
             expect(burn_gas_fee).toBeGreaterThanOrEqual(actualSent);
             expect(burn_notification_fee).toBeGreaterThanOrEqual(actualRecv);
@@ -1120,11 +1146,11 @@ describe('JettonWallet', () => {
        const oldConfig = blockchain.config;
        blockchain.setConfig(setGasPrice(oldConfig,{
            ...gasPrices,
-           gas_price: gasPrices.gas_price * 3n
+           gas_price: gasPrices.gas_price * 130n / 100n
        }, 0));
        await testBurnFees(minimalFee, deployer.address, burnAmount, Errors.not_enough_gas, null);
 
-       minimalFee += (burn_gas_fee - gasPrices.flat_gas_price) * 2n + (burn_notification_fee - gasPrices.flat_gas_price) * 2n;
+       minimalFee += (burn_gas_fee - gasPrices.flat_gas_price) / 10n * 3n + (burn_notification_fee - gasPrices.flat_gas_price) / 10n * 3n
 
        await testBurnFees(minimalFee, deployer.address, burnAmount, 0, null);
        // Verify edge

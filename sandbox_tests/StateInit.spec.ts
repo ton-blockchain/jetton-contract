@@ -28,8 +28,34 @@ describe('State init tests', () => {
         _libs.set(BigInt(`0x${jwallet_code_raw.hash().toString('hex')}`), jwallet_code_raw);
         const libs = beginCell().storeDictDirect(_libs).endCell();
         blockchain.libs = libs;
-        let lib_prep = beginCell().storeUint(2,8).storeBuffer(jwallet_code_raw.hash()).endCell();
-        jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
+
+        const confDict = Dictionary.loadDirect(Dictionary.Keys.Int(32), Dictionary.Values.Cell(), blockchain.config);
+        confDict.set(-1024, beginCell().storeBuffer(jwallet_code_raw.hash(), 32).endCell());
+        blockchain.setConfig(beginCell().storeDictDirect(confDict).endCell());
+
+        // let lib_prep = beginCell().storeUint(2,8).storeBuffer(jwallet_code_raw.hash()).endCell();
+
+        /*
+        * Updatable wallet code
+        *<{
+        * 2 PUSHINT
+        * NEWC // constructor of library cell
+        * 8 STU // store 02 as library identifier to library cell constructor
+        * -1024 PUSHINT CONFIGPARAM // X - is special index that is reserved for jetton code
+        * DROP // Drop the status
+        * CTOS // conver param to slice
+        * 256 PUSHINT PLDUX SWAP // load 256 hash of the library
+        * 256 STU // store hash to library cell constructor
+        * 1 PUSHINT ENDXC // finalize library cell
+        * CTOS // open cell (it transparently replaced with actual code loaded via library mechanism)
+        * BLESS // convert slice to continuation (executable code)
+        * EXECUTE // start to execute
+        *}>c
+        */
+
+        jwallet_code = Cell.fromBase64("te6cckEBAQEAHAAANHLIyweB/AD4MjDQgQEA1wMBy/9xzyPQ7R7YMIboiA==");
+
+        //jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
 
         console.log('jetton minter code hash = ', minter_code.hash().toString('hex'));
         console.log('jetton wallet code hash = ', jwallet_code.hash().toString('hex'));
