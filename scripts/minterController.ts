@@ -2,7 +2,7 @@ import { checkJettonMinter } from '../wrappers/JettonMinterChecker';
 import { Address, beginCell, Cell, fromNano, OpenedContract, toNano } from '@ton/core';
 import { compile, NetworkProvider, UIProvider} from '@ton/blueprint';
 import { JettonMinter, jettonMinterConfigCellToConfig, JettonMinterConfigFull, jettonMinterConfigFullToCell } from '../wrappers/JettonMinter';
-import { promptBool, promptAmount, promptAddress, displayContentCell, getLastBlock, waitForTransaction, getAccountLastTx, promptToncoin, promptUrl, jettonWalletCodeFromLibrary } from '../wrappers/ui-utils';
+import { promptBool, promptAmount, promptAddress, displayContentCell, getLastBlock, waitForTransaction, getAccountLastTx, promptToncoin, promptUrl } from '../wrappers/ui-utils';
 import {TonClient4} from "@ton/ton";
 import { fromUnits } from '../wrappers/units';
 let jettonMinterContract:OpenedContract<JettonMinter>;
@@ -279,8 +279,8 @@ export async function run(provider: NetworkProvider) {
     const sender = provider.sender();
     const hasSender = sender.address !== undefined;
     minterCode = await compile('JettonMinter');
-    walletCode = jettonWalletCodeFromLibrary(await compile('JettonWallet'));
-    let   done   = false;
+    walletCode = Cell.fromBase64("te6cckEBAQEAHAAANHLIyweB/AD4MjDQgQEA1wMBy/9xzyPQ7R7YMIboiA==");
+    let   done = false;
     let   retry:boolean;
     let   minterAddress:Address;
 
