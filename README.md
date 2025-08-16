@@ -52,7 +52,7 @@ However, certain conditions must be satisfied for this to work:
 
 ### Library deployment
 
-The library for the current code is already deployed by and would last for 100 year of storage.
+The library for the current code is already deployed by NOTCoin and would last for 100 year of storage.
 
 This means that if no modifications applied to the current code, developers can utilize publicly available library
 without needing to deploy a new one.
