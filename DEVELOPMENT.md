@@ -97,7 +97,7 @@ When testing cycle applied, the resulting diff might look like this:
 
 ``` diff
 diff --git a/contracts/gas.fc b/contracts/gas.fc
-index a638e6c..75475e7 100644
+index 96d346d..d361954 100644
 --- a/contracts/gas.fc
 +++ b/contracts/gas.fc
 @@ -20,18 +20,18 @@ const MIN_STORAGE_DURATION = 5 * 365 * 24 * 3600; ;; 5 years
@@ -105,7 +105,7 @@ index a638e6c..75475e7 100644
  
  ;;- `JETTON_WALLET_BITS` [/sandbox_tests/StateInit.spec.ts#L92](L92)
 -const JETTON_WALLET_BITS  = 1033;
-+const JETTON_WALLET_BITS  = 8211;
++const JETTON_WALLET_BITS  = 7563;
  
  ;;- `JETTON_WALLET_CELLS`: [/sandbox_tests/StateInit.spec.ts#L92](L92)
 -const JETTON_WALLET_CELLS = 3;
@@ -116,7 +116,7 @@ index a638e6c..75475e7 100644
  ;; we count bits as if balances are max possible
  ;;- `JETTON_WALLET_INITSTATE_BITS` [/sandbox_tests/StateInit.spec.ts#L95](L95)
 -const JETTON_WALLET_INITSTATE_BITS  = 931;
-+const JETTON_WALLET_INITSTATE_BITS  = 8109;
++const JETTON_WALLET_INITSTATE_BITS  = 7461;
  ;;- `JETTON_WALLET_INITSTATE_CELLS` [/sandbox_tests/StateInit.spec.ts#L95](L95)
 -const JETTON_WALLET_INITSTATE_CELLS = 3;
 +const JETTON_WALLET_INITSTATE_CELLS = 17;
@@ -127,39 +127,39 @@ index a638e6c..75475e7 100644
  ;;resulting gas consumption is printed to the console.
  
  ;;- `SEND_TRANSFER_GAS_CONSUMPTION` [/sandbox_tests/JettonWallet.spec.ts#L853](L853)
--const SEND_TRANSFER_GAS_CONSUMPTION    = 9255;
-+const SEND_TRANSFER_GAS_CONSUMPTION    = 9161;
+-const SEND_TRANSFER_GAS_CONSUMPTION    = 10065;
++const SEND_TRANSFER_GAS_CONSUMPTION    = 8923;
  
  ;;- `RECEIVE_TRANSFER_GAS_CONSUMPTION` [/sandbox_tests/JettonWallet.spec.ts#L862](L862)
--const RECEIVE_TRANSFER_GAS_CONSUMPTION = 10355;
-+const RECEIVE_TRANSFER_GAS_CONSUMPTION = 10253;
+-const RECEIVE_TRANSFER_GAS_CONSUMPTION = 10435;
++const RECEIVE_TRANSFER_GAS_CONSUMPTION = 10121;
  
  ;;- `SEND_BURN_GAS_CONSUMPTION` [/sandbox_tests/JettonWallet.spec.ts#L1154](L1154)
--const SEND_BURN_GAS_CONSUMPTION    = 5791;
+-const SEND_BURN_GAS_CONSUMPTION    = 5891;
 +const SEND_BURN_GAS_CONSUMPTION    = 5681;
  
  ;;- `RECEIVE_BURN_GAS_CONSUMPTION` [/sandbox_tests/JettonWallet.spec.ts#L1155](L1155)
- const RECEIVE_BURN_GAS_CONSUMPTION = 6775;
+ const RECEIVE_BURN_GAS_CONSUMPTION = 6757;
 diff --git a/sandbox_tests/JettonWallet.spec.ts b/sandbox_tests/JettonWallet.spec.ts
-index b7b4c52..e92486a 100644
+index 30da906..5854e02 100644
 --- a/sandbox_tests/JettonWallet.spec.ts
 +++ b/sandbox_tests/JettonWallet.spec.ts
-@@ -86,12 +86,12 @@ describe('JettonWallet', () => {
-         blockchain     = await Blockchain.create();
+@@ -76,12 +76,12 @@ describe('JettonWallet', () => {
+         blockchain.now = Math.floor(Date.now() / 1000);
          deployer       = await blockchain.treasury('deployer');
          notDeployer    = await blockchain.treasury('notDeployer');
 -        walletStats    = new StorageStats(1033, 3);
-+        walletStats    = new StorageStats(8211, 17);
++        walletStats    = new StorageStats(7563, 17);
          msgPrices      = getMsgPrices(blockchain.config, 0);
          gasPrices      = getGasPrices(blockchain.config, 0);
          storagePrices  = getStoragePrices(blockchain.config);
          storageDuration= 5 * 365 * 24 * 3600;
 -        stateInitStats = new StorageStats(931, 3);
-+        stateInitStats = new StorageStats(8109, 17);
++        stateInitStats = new StorageStats(7461, 17);
          defaultContent = {
                             uri: 'https://some_stablecoin.org/meta.json'
                         };
-@@ -112,7 +112,7 @@ describe('JettonWallet', () => {
+@@ -102,7 +102,7 @@ describe('JettonWallet', () => {
                     JettonMinter.createFromConfig(
                       {
                         admin: deployer.address,
@@ -168,38 +168,38 @@ index b7b4c52..e92486a 100644
                         jetton_content: jettonContentToCell(defaultContent)
                       },
                       minter_code));
-@@ -854,7 +854,7 @@ describe('JettonWallet', () => {
+@@ -751,7 +751,7 @@ describe('JettonWallet', () => {
              success: true
          });
          send_gas_fee = printTxGasStats("Jetton transfer", transferTx);
--        send_gas_fee = computeGasFee(gasPrices, 9255n);
-+        send_gas_fee = computeGasFee(gasPrices, 9161n);
+-        let mockGas  = computeGasFee(gasPrices, 10065n);
++        let mockGas  = computeGasFee(gasPrices, 8923n);
+         expect(mockGas).toBeGreaterThanOrEqual(send_gas_fee);
+         send_gas_fee = mockGas;
  
-         const receiveTx = findTransactionRequired(sendResult.transactions, {
-             on: notDeployerJettonWallet.address,
-@@ -863,7 +863,7 @@ describe('JettonWallet', () => {
+@@ -762,7 +762,7 @@ describe('JettonWallet', () => {
              success: true
          });
          receive_gas_fee = printTxGasStats("Receive jetton", receiveTx);
--        receive_gas_fee = computeGasFee(gasPrices, 10355n);
-+        receive_gas_fee = computeGasFee(gasPrices, 10253n);
+-        mockGas   = computeGasFee(gasPrices, 10435n);
++        mockGas   = computeGasFee(gasPrices, 10121n);
+         expect(mockGas).toBeGreaterThanOrEqual(receive_gas_fee);
+         receive_gas_fee = mockGas;
  
-         expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - sentAmount);
-         expect(await notDeployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance2 + sentAmount);
-@@ -1157,7 +1157,7 @@ describe('JettonWallet', () => {
-         const burnTxs      = await testBurnFees(toNano('1'), deployer.address, burnAmount, 0, customPaylod);
-         const actualSent   = printTxGasStats("Burn transaction", burnTxs[0]);
-         const actualRecv   = printTxGasStats("Burn notification transaction", burnTxs[1]);
--        burn_gas_fee = computeGasFee(gasPrices, 5791n);
-+        burn_gas_fee = computeGasFee(gasPrices, 5681n);
-         burn_notification_fee = computeGasFee(gasPrices, 6775n);
-         expect(burn_gas_fee).toBeGreaterThanOrEqual(actualSent);
-         expect(burn_notification_fee).toBeGreaterThanOrEqual(actualRecv);
+@@ -1035,7 +1035,7 @@ describe('JettonWallet', () => {
+ 
+             const actualSent   = printTxGasStats("Burn transaction", sendResult.transactions[1]);
+             const actualRecv   = printTxGasStats("Burn notification transaction", sendResult.transactions[2]);
+-            burn_gas_fee = computeGasFee(gasPrices, 5891n);
++            burn_gas_fee = computeGasFee(gasPrices, 5681n);
+             burn_notification_fee = computeGasFee(gasPrices, 6757n);
+             expect(burn_gas_fee).toBeGreaterThanOrEqual(actualSent);
+             expect(burn_notification_fee).toBeGreaterThanOrEqual(actualRecv);
 diff --git a/sandbox_tests/StateInit.spec.ts b/sandbox_tests/StateInit.spec.ts
-index f514427..7e04f57 100644
+index f1de38d..ab659a3 100644
 --- a/sandbox_tests/StateInit.spec.ts
 +++ b/sandbox_tests/StateInit.spec.ts
-@@ -38,7 +38,7 @@ describe('State init tests', () => {
+@@ -39,7 +39,7 @@ describe('State init tests', () => {
                     JettonMinter.createFromConfig(
                       {
                         admin: deployer.address,
@@ -208,7 +208,7 @@ index f514427..7e04f57 100644
                         jetton_content: jettonContentToCell({uri: "https://ton.org/"})
                       },
                       minter_code));
-@@ -73,7 +73,7 @@ describe('State init tests', () => {
+@@ -74,7 +74,7 @@ describe('State init tests', () => {
          const res = await jettonMinter.sendMint(deployer.getSender(),
                                                  deployer.address,
                                                  maxValue,
@@ -217,7 +217,6 @@ index f514427..7e04f57 100644
          expect(res.transactions).toHaveTransaction({
              on: deployerWallet.address,
              op: Op.internal_transfer,
-
 ```
 
 ## TON Libraries FAQ
