@@ -35,7 +35,8 @@ describe('State init tests', () => {
         jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
 
         console.log('jetton minter code hash = ', minter_code.hash().toString('hex'));
-        console.log('jetton wallet code hash = ', jwallet_code.hash().toString('hex'));
+        console.log('jetton wallet library hash = ', jwallet_code.hash().toString('hex'));
+        console.log('jetton wallet code hash = ', jwallet_code_raw.hash().toString('hex'));
 
         jettonMinter   = blockchain.openContract(
                    JettonMinter.createFromConfig(
