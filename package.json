@@ -9,7 +9,7 @@
         "prettier": "npx prettier --write '{test,contracts,build}/**/*.{ts,js,json}'"
     },
     "devDependencies": {
-        "@ton/blueprint": "^0.39.1",
+        "@ton/blueprint": "^0.40.0",
         "@ton/core": "^0.61.0",
         "@ton/crypto": "^3.3.0",
         "@ton/sandbox": "^0.36.0",
