@@ -7,7 +7,7 @@ export async function run(provider: NetworkProvider) {
     const minterAddress = await promptAddress("Enter the address of the jetton minter:", ui);
 
     const minter = provider.open(JettonMinter.createFromAddress(minterAddress));
-    const rawWallet = await compile('JettonWallet');
+    const rawWallet = await compile('JettonWallet', {buildLibrary: false});
     const walletLib = jettonWalletCodeFromLibrary(rawWallet);
     const expHash   = rawWallet.hash().toString('hex');
 

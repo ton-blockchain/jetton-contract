@@ -8,7 +8,7 @@ export async function run(provider: NetworkProvider) {
     ui.write("This jetton contract uses the jetton-wallet code from library. This reduces network fees when operating with the jetton.");
     ui.write("Librarian is the contract that stores the library.");
     ui.write("If someone is already storing this jetton-wallet library on the blockchain - you don't need to deploy librarian.");
-    const jettonWalletCodeRaw = await compile('JettonWallet');
+    const jettonWalletCodeRaw = await compile('JettonWallet', {buildLibrary: false});
     const librarianCode = await compile('Librarian');
 
     const tonAmount = await promptToncoin("Enter Toncoin amount to deploy librarian. Some of Toncoins will reserved on the contract to pay storage fees. Excess will be returned.", ui);
