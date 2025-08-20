@@ -2,7 +2,7 @@ import { Blockchain, SandboxContract, TreasuryContract } from '@ton/sandbox';
 import { Cell, toNano, beginCell, Address, Dictionary, storeStateInit } from '@ton/core';
 import { jettonContentToCell, JettonMinter } from '../wrappers/JettonMinter';
 import { JettonWallet } from '../wrappers/JettonWallet';
-import { compile } from '@ton/blueprint';
+import { compile, libraryCellFromCode } from '@ton/blueprint';
 import '@ton/test-utils';
 import { collectCellStats } from '../gasUtils';
 import { Op, Errors } from '../wrappers/JettonConstants';
@@ -23,7 +23,7 @@ describe('State init tests', () => {
     beforeAll(async () => {
         blockchain = await Blockchain.create();
         deployer   = await blockchain.treasury('deployer');
-        jwallet_code_raw = await compile('JettonWallet');
+        jwallet_code_raw = await compile('JettonWallet', {buildLibrary: false});
         minter_code    = await compile('JettonMinter');
 
         //jwallet_code is library
@@ -31,8 +31,7 @@ describe('State init tests', () => {
         _libs.set(BigInt(`0x${jwallet_code_raw.hash().toString('hex')}`), jwallet_code_raw);
         const libs = beginCell().storeDictDirect(_libs).endCell();
         blockchain.libs = libs;
-        let lib_prep = beginCell().storeUint(2,8).storeBuffer(jwallet_code_raw.hash()).endCell();
-        jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
+        jwallet_code = libraryCellFromCode(jwallet_code_raw);
 
         console.log('jetton minter code hash = ', minter_code.hash().toString('hex'));
         console.log('jetton wallet library hash = ', jwallet_code.hash().toString('hex'));

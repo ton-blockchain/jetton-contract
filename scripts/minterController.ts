@@ -279,7 +279,7 @@ export async function run(provider: NetworkProvider) {
     const sender = provider.sender();
     const hasSender = sender.address !== undefined;
     minterCode = await compile('JettonMinter');
-    walletCode = jettonWalletCodeFromLibrary(await compile('JettonWallet'));
+    walletCode = await compile('JettonWallet');
     let   done   = false;
     let   retry:boolean;
     let   minterAddress:Address;
