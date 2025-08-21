@@ -4,7 +4,7 @@ import { JettonWallet } from '../wrappers/JettonWallet';
 import { jettonContentToCell, JettonMinter, JettonMinterContent } from '../wrappers/JettonMinter';
 import '@ton/test-utils';
 import {findTransactionRequired} from '@ton/test-utils';
-import { compile } from '@ton/blueprint';
+import { compile, libraryCellFromCode } from '@ton/blueprint';
 import { randomAddress, getRandomTon, differentAddress, getRandomInt, testJettonInternalTransfer } from './utils';
 import { Op, Errors } from '../wrappers/JettonConstants';
 import { calcStorageFee, collectCellStats, computeFwdFees, computeFwdFeesVerbose, FullFees, GasPrices, getGasPrices, getMsgPrices, getStoragePrices, computedGeneric, storageGeneric, MsgPrices, setGasPrice, setMsgPrices, setStoragePrices, StorageStats, StorageValue } from '../gasUtils';
@@ -70,7 +70,7 @@ describe('JettonWallet', () => {
                        exp: boolean) => Promise<void>;
 
     beforeAll(async () => {
-        jwallet_code_raw   = await compile('JettonWallet');
+        jwallet_code_raw   = await compile('JettonWallet', {buildLibrary: false});
         minter_code    = await compile('JettonMinter');
         blockchain     = await Blockchain.create();
         blockchain.now = Math.floor(Date.now() / 1000);
@@ -91,11 +91,11 @@ describe('JettonWallet', () => {
         _libs.set(BigInt(`0x${jwallet_code_raw.hash().toString('hex')}`), jwallet_code_raw);
         const libs = beginCell().storeDictDirect(_libs).endCell();
         blockchain.libs = libs;
-        let lib_prep = beginCell().storeUint(2,8).storeBuffer(jwallet_code_raw.hash()).endCell();
-        jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
+        jwallet_code = libraryCellFromCode(jwallet_code_raw);
 
         console.log('jetton minter code hash = ', minter_code.hash().toString('hex'));
-        console.log('jetton wallet code hash = ', jwallet_code.hash().toString('hex'));
+        console.log('jetton wallet library hash = ', jwallet_code.hash().toString('hex'));
+        console.log('jetton wallet code hash = ', jwallet_code_raw.hash().toString('hex'));
 
         jettonMinter   = blockchain.openContract(
                    JettonMinter.createFromConfig(
