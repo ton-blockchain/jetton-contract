@@ -18,6 +18,10 @@ export class Librarian implements Contract {
         });
     }
 
+    async getState(provider: ContractProvider) {
+        return await provider.getState();
+    }
+
     static createFromAddress(address: Address) {
         return new Librarian(address);
     }
